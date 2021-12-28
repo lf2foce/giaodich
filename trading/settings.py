@@ -125,7 +125,7 @@ STATIC_URL = '/static/'
 
 # TA add
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static') # to deploy static files
+STATIC_ROOT = BASE_DIR / 'static/' # to deploy static files
 
 LOGIN_REDIRECT_URL = 'portfolios:index'
 LOGIN_URL = 'account:login'
