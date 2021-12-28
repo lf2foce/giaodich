@@ -1,0 +1,30 @@
+{% extends "portfolios/layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th class="text-end">Shares</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">Transacted</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in transactions %}
+            <tr>
+                <td>{{ row.symbol }}</td>
+                <td class="text-end">{{ row.shares }}</td>
+                <td class="text-end">{{ row.price }}</td>
+                <td class="text-end">{{ row.created_at }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

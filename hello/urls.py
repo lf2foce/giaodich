@@ -1,0 +1,10 @@
+from django.urls import path
+from . import views
+
+urlpatterns =[
+    path("", views.index, name="index"),
+    path("task", views.task, name="task"),
+    path("<str:name>", views.greet, name="greet"),
+    
+
+]
