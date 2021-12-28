@@ -25,7 +25,7 @@ SECRET_KEY = 'izluqgsl&o9v02ucw)fzp_+)ekj4olgh0xvo8xs($-v+qh4m5+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', 'https://giaodich.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', 'giaodich.herokuapp.com']
 
 
 # Application definition
