@@ -127,6 +127,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles' # to deploy static files
 # heroku config:set DEBUG_COLLECTSTATIC=1
+STATICFILES_DIRS = BASE_DIR / 'static'
 
 LOGIN_REDIRECT_URL = 'portfolios:index'
 LOGIN_URL = 'account:login'
