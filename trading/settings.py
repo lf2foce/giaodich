@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware', # add heroku
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,9 +126,8 @@ STATIC_URL = '/static/'
 
 # TA add
 
-STATIC_ROOT = BASE_DIR / 'staticfiles/' # to deploy static files
-# heroku config:set DEBUG_COLLECTSTATIC=1
-STATICFILES_DIRS = BASE_DIR / 'static/'
+STATIC_ROOT = BASE_DIR / 'static/' # to deploy static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = 'portfolios:index'
 LOGIN_URL = 'account:login'
