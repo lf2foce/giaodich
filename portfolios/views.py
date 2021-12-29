@@ -143,6 +143,7 @@ def buy(request):
 
    
 def history(request):
-    transactions = Transaction.objects.all().values()
+    current_user = request.user
+    transactions = Transaction.objects.filter(client=current_user).values()
     transactions = [dict(x, **{'price': usd(x['price'])}) for x in transactions]
     return render(request, 'portfolios/history.html', {'transactions': transactions})

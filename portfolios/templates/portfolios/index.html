@@ -5,6 +5,16 @@
 {% endblock %}
 
 {% block main %}
-Các mã phổ biến để test: AAPL, TSLA, SHOP,  AMZN, MSFT, GOOG
+
+
+{% if request.user.is_authenticated %}
+<h1>Home</h1>
+<p>Welcome to your profile.</p>
+Cash: {{ user.profile.cash }}
+<p>Các mã phổ biến để test: AAPL, TSLA, SHOP,  AMZN, MSFT, GOOG</p>
+{% else %}
+<p>You are not logged in.</p>
+{% endif %}
+
 
 {% endblock %}
