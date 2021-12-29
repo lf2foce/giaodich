@@ -9,18 +9,30 @@
     
       
     <div class="col-md-4 text-center">
+        <h4>Nhập thông tin</h4>
         <form method="post" action="{% url 'portfolios:sell' %}">
-            <!-- <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Symbol" type="text">
+            <div class="mb-3">
+                <select class="form-select" name="symbol">
+                    <option disabled selected value="">Chọn mã CK</option>
+    
+                        {% for symbol in symbols %}
+                            <option value="{{ symbol.symbol }}">{{ symbol.company }}</option>
+    
+                        {% endfor %}
+    
+                </select>
             </div>
             <div class="mb-3">
-                <input autocomplete="off" class="form-control" min="1" name="shares" placeholder="Shares" type="number">
-            </div> -->
-            {% csrf_token %}
-            {{form}}
+                <input autocomplete="off" class="form-control" min="10" name="shares" placeholder="Shares" type="number">
+            </div>
             <div class="d-grid gap-2">
                 <button class="btn btn-warning" type="submit">Sell</button>
             </div>
+            {% csrf_token %}
+            <!-- {{form}}
+            <div class="d-grid gap-2">
+                <button class="btn btn-warning" type="submit">Sell</button>
+            </div> -->
         </form>
     </div>
 </div>

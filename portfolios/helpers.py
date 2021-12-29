@@ -19,7 +19,7 @@ def apology(request, message, code='todo'):
                          ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
             s = s.replace(old, new)
         return s
-    return render(request, "portfolios/apology.html", {'top':code, 'bottom': escape(message)})
+    return render(request, "portfolios/apology.html", {'bottom':code, 'top': escape(message)})
 
 
 
@@ -51,3 +51,7 @@ def lookup(symbol):
 def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
+
+def vnd(value):
+    """Format value as USD."""
+    return f"{value:,.3f}"

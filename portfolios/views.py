@@ -6,10 +6,10 @@ import decimal
 from .models import Transaction
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Min, Max
 
 from .helpers import lookup, apology, usd
-from .forms import BuySellForm
+from .forms import BuyForm, SellForm
 
 
 
@@ -38,8 +38,9 @@ def my_portfolio(request):
 
     sum_totals = cash + sum([decimal.Decimal(x['total']) for x in stocks])
 
+    stocks = [dict(x, **{'total': usd(x['total'])}) for x in stocks]
     
-    return render(request, 'portfolios/my_portfolio.html', {'stocks':stocks, 'cash': usd(cash), 'sum_total': usd(sum_totals), 'lookup': lookup, 'usd': usd})
+    return render(request, 'portfolios/my_portfolio.html', {'stocks':stocks, 'cash': usd(cash), 'sum_total': usd(sum_totals)})
 
 # def quote(request):
 #     return render(request, 'portfolios/quote.html', 
@@ -47,14 +48,63 @@ def my_portfolio(request):
 
 @login_required
 def sell(request):
-    form = BuySellForm()
-    return render(request, 'portfolios/sell.html', 
-                    {'form': form})
+    if request.method == "POST":
+        form = SellForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            symbol = cd['symbol'].upper()
+            shares = int(cd['shares'])
+            item = lookup(symbol)
+            
+            if not item:
+                return apology(request, "INVALID SYMBOL", 400)
+
+            current_user = request.user    
+            
+            shares_owned = Transaction.objects.filter(client=current_user) \
+                .values('symbol') \
+                .annotate(shares = Sum('shares')) \
+                .get(symbol=symbol)['shares']
+
+            if shares <= 1 or shares > shares_owned:
+                return apology(request, "Chọn số lượng hợp lệ")
+           
+            item = lookup(symbol)
+            item_name = item['name']
+            item_price = item['price']
+            price_sold = item_price * shares
+
+            # db.execute("INSERT INTO transactions(user_id, name, shares, price, type, symbol)\
+            #         VALUES (?, ?, ?, ?, ?, ?)", user_id, item_name, -shares, item_price, 'sell', symbol)
+                
+            # db.execute("UPDATE users SET cash = ? WHERE id = ?", current_cash + price_sold, user_id )
+            current_cash = current_user.profile.cash + decimal.Decimal(price_sold)
+            
+            transactions = Transaction(client=current_user, company=item_name, shares=-shares, price=item_price, action='sell', symbol=symbol)
+            transactions.save()
+            
+            current_user.profile.cash = current_cash
+            current_user.save()
+
+            messages.success(request, 'You have successfully sell shares!')
+            return redirect('portfolios:my_portfolio')
+        messages.error(request, 'error')
+        return redirect('portfolios:sell')
+    else:
+        current_user = request.user
+        # symbols = Transaction.objects.filter(client=current_user, status='executed').distinct('symbol') # psql
+        symbols = Transaction.objects.filter(client=current_user) \
+            .values('symbol').annotate(company=Max('company')).order_by('-company')
+        print(symbols)
+        form = SellForm()
+        
+        return render(request, 'portfolios/sell.html', 
+                        {'form': form, 'symbols':symbols})
 
 @login_required
 def buy(request):
     if request.method == 'POST':
-        form = BuySellForm(request.POST)
+        form = BuyForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
             symbol = cd['symbol'].upper()
@@ -65,7 +115,6 @@ def buy(request):
                 return apology(request, "INVALID SYMBOL", 400)
             
             current_user = request.user    
-            
             cash = current_user.profile.cash
             print(f'\n\n{cash}\n\n')
             
@@ -85,9 +134,9 @@ def buy(request):
             current_user.save()
             
             messages.success(request, 'You have successfully bought shares!')
-            return redirect('portfolios:index')
+            return redirect('portfolios:my_portfolio')
     else:
-        form = BuySellForm()
+        form = BuyForm()
         return render(request, 'portfolios/buy.html', {'form': form})
 
     
