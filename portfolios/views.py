@@ -25,20 +25,24 @@ def my_portfolio(request):
     #     WHERE user_id = ? GROUP BY user_id, symbol, name", user_id)
     stocks = Transaction.objects.filter(client=current_user, status='pending') \
         .values('symbol', 'company') \
-        .annotate(total_shares = Sum('shares')) \
+        .annotate(total_shares = Sum('shares'), amount=Sum('id', field="shares * price")) \
+        .filter(total_shares__gt=1) \
         .order_by('symbol')
     print(stocks)
     # chua confirm
     cash = current_user.profile.cash
 
     # Use lookup API to get the current price for each stock
-    stocks = [dict(x, **{'price': lookup(x['symbol'])['price']}) for x in stocks]
+    stocks = [dict(x, **{'current_price': lookup(x['symbol'])['price']}) for x in stocks]
 
-    stocks = [dict(x, **{'total': x['price']*x['total_shares']}) for x in stocks]
+    stocks = [dict(x, **{'total': x['current_price']*x['total_shares']}) for x in stocks]
 
     sum_totals = cash + sum([decimal.Decimal(x['total']) for x in stocks])
 
+    stocks = [dict(x, **{'change': usd(decimal.Decimal(x['total']) - decimal.Decimal(x['amount']) ) }) for x in stocks]
+
     stocks = [dict(x, **{'total': usd(x['total'])}) for x in stocks]
+
     
     return render(request, 'portfolios/my_portfolio.html', {'stocks':stocks, 'cash': usd(cash), 'sum_total': usd(sum_totals)})
 
@@ -94,7 +98,8 @@ def sell(request):
         current_user = request.user
         # symbols = Transaction.objects.filter(client=current_user, status='executed').distinct('symbol') # psql
         symbols = Transaction.objects.filter(client=current_user) \
-            .values('symbol').annotate(company=Max('company')).order_by('-company')
+            .values('symbol').annotate(company=Max('company'), shares = Sum('shares')) \
+            .filter(shares__gt=1).order_by('-company')
         print(symbols)
         form = SellForm()
         

@@ -13,6 +13,7 @@ psycopg2 = "*"
 pillow = "*"
 gunicorn = "*"
 whitenoise = "*"
+django-tailwind = "*"
 
 [dev-packages]
 

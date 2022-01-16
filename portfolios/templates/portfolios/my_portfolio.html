@@ -1,4 +1,4 @@
-{% extends "portfolios/layout.html" %}
+{% extends "layout.html" %}
 
 {% block title %}
     Portfolio
@@ -10,18 +10,19 @@
             <tr>
                 <th>Symbol</th>
                 <th>Name</th>
-                <th class="text-end">Shares</th>
+                <th class="text-end">Quantity</th>
                 <th class="text-end">Price</th>
+                <th class="text-end">Thay đổi</th>
                 <th class="text-end">TOTAL</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                  <td class="border-0 fw-bold text-end"  colspan="4">Cash</td>
+                  <td class="border-0 fw-bold text-end"  colspan="5">Cash</td>
                   <td class="border-0 text-end">{{ cash }}</td>
             </tr>
             <tr>
-                <td class="border-0 fw-bold text-end" colspan="4">TOTAL</td>
+                <td class="border-0 fw-bold text-end" colspan="5">TOTAL</td>
                 <td class="border-0 text-end">{{ sum_total }}</td>
             </tr>
         </tfoot>
@@ -31,7 +32,8 @@
                     <td>{{ stock.symbol }}</td>
                     <td>{{ stock.company }}</td>
                     <td class="text-end">{{ stock.total_shares }}</td>
-                    <td class="text-end">{{ stock.price }}</td>
+                    <td class="text-end">{{ stock.current_price }}</td>
+                    <td class="text-end">{{ stock.change }}</td>
                     <td class="text-end">{{ stock.total }}</td>
                 </tr>
             {% endfor %}
